@@ -43,3 +43,21 @@ se_list_filtered<-lapply(se_list_filtered, function(x){
   x$low_feature<-x$nFeature_RNA<300
   return(x)
 })
+
+#Data preprocessing - normalisation, finding variable features and scaling----
+#Normalisation:“LogNormalize”: Feature counts for each cell are divided by the total counts for that cell and multiplied by the scale.factor. 
+#This is then natural-log transformed using log1p
+
+se_list_filtered<-lapply(se_list_filtered, NormalizeData)
+
+#Find variable features----
+#by default 2000 features are found
+se_list_filtered<-lapply(se_list_filtered, FindVariableFeatures)
+
+#Scaling the data ----
+se_list_filtered<-lapply(se_list_filtered, ScaleData)
+
+#Run PCA
+#By default 50 PCs are calculated
+#The data will be stored in @reductions under a reduction name pca
+se_list_filtered <- lapply(se_list_filtered, RunPCA)
