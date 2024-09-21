@@ -1,10 +1,10 @@
 #Loading packages needed for the analysis ----
 library(Seurat)
 library(ggplot2)
-library(patchwork)
 library(ggpubr)
 library(dplyr)
 library(clustree)
+
 #Loading data & building Seurat objects ----
 
 mutant<-Read10X("~/Single_cell_RNAseq_scripts/data/MUT/")
@@ -145,12 +145,14 @@ DimPlot(SOM, reduction = "umap", group.by = "snn_som_res.0.1")
 Idents(SOM)<-SOM$snn_som_res.0.1
 
 #find markers ----
-markers<-JoinLayers(SOM)
-markers<-FindAllMarkers(markers, min.diff.pct = 0.5, only.pos = TRUE,
+SOM_joined<-JoinLayers(SOM)
+markers<-FindAllMarkers(SOM_joined, min.diff.pct = 0.5, only.pos = TRUE,
                  max.cells.per.ident = 100)
 
 #Look at the markers using dotplot ----
 genes <- slice_head(group_by(markers,cluster),n=3)$gene
-DotPlot(SOM,features=genes,group.by="snn_som_res.0.1",
+DotPlot(SOM_joined,features=genes,group.by="snn_som_res.0.1",
         dot.scale=4,cols="RdYlBu") +
   theme(axis.text.x=element_text(angle=45,hjust=1))
+
+
