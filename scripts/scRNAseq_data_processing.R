@@ -57,7 +57,22 @@ se_list_filtered<-lapply(se_list_filtered, FindVariableFeatures)
 #Scaling the data ----
 se_list_filtered<-lapply(se_list_filtered, ScaleData)
 
-#Run PCA
+#Run PCA----
 #By default 50 PCs are calculated
 #The data will be stored in @reductions under a reduction name pca
 se_list_filtered <- lapply(se_list_filtered, RunPCA)
+
+#There are 2 strategies to know how many PCs to include in the further analysis:
+#heatmaps - seem to be more intuitive
+#elbow plots
+#DimHeatmap function is used to draw the heatmaps
+#Draws a heatmap focusing on a principal component. Both cells and genes are sorted by their principal component scores. 
+#Allows for nice visualization of sources of heterogeneity in the dataset.
+
+lapply(se_list_filtered, function(x){
+  DimHeatmap(x, dims=1:15, cells=500)
+  })
+
+lapply(se_list_filtered, ElbowPlot)
+
+#Considering the output of the heatmap and elbow plot 14 PCs will be used further
