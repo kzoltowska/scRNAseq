@@ -1,4 +1,4 @@
-#scRNAseq
+# scRNAseq
 
 Script for processing of scRNAseq data
 
