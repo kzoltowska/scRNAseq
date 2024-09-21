@@ -3,6 +3,7 @@ library(Seurat)
 library(ggplot2)
 library(patchwork)
 library(ggpubr)
+library(dplyr)
 
 #Loading data & building Seurat objects ----
 
@@ -19,5 +20,19 @@ se_list<-list("WT"=se_wt, "Mutant"=se_mutant)
 #Looking at mitochondria transcripts that could indicate cell death ----
 se_list<-lapply(se_list, function(x){
   x$mitochondrial<-PercentageFeatureSet(x, pattern="^mt")
+  return(x)
+})
+
+df_mitochondrial<-rbind(se_list$WT@meta.data %>% dplyr::select(Condition, mitochondrial),
+                        se_list$Mutant@meta.data %>% dplyr::select(Condition, mitochondrial))
+df_mitochondrial$Condition<-as.factor(df_mitochondrial$Condition)
+
+ggplot(df_mitochondrial, aes(x=Condition, y=mitochondrial)) +geom_violin(fill="cornflowerblue") + theme_pubr()+
+  ylab("% mitochondrial transcript")
+
+#Filtering cells with high percentage (>25%) of mitochondrial transcripts
+
+se_list_filtered<-lapply(se_list, function(x){
+  x<-subset(x,mitochondrial < 25)
   return(x)
 })
